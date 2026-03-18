@@ -16,11 +16,6 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Validación temprana de la API Key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY no está configurada. Añádela como variable de entorno.")
-
 # Orígenes permitidos (configura ALLOWED_ORIGIN en Railway con tu dominio)
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
 
@@ -49,6 +44,10 @@ class ChatResponse(BaseModel):
 # --- Construcción del RAG ---
 def build_rag_chain():
     """Carga los documentos de /docs y construye la cadena RAG."""
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY no está configurada. Añádela como variable de entorno.")
+
     docs_path = os.path.join(os.path.dirname(__file__), "docs")
 
     # Carga archivos .txt
@@ -67,10 +66,10 @@ def build_rag_chain():
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(documents)
 
-    embeddings = OpenAIEmbeddings(api_key=OPENAI_API_KEY)
+    embeddings = OpenAIEmbeddings(api_key=openai_api_key)
     vectorstore = Chroma.from_documents(chunks, embeddings)
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=openai_api_key)
 
     chain = RetrievalQA.from_chain_type(
         llm=llm,
