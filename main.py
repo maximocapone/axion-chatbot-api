@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -29,18 +28,7 @@ ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
 rag_chain = None
 
 
-# --- Ciclo de vida: construye el RAG al arrancar ---
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global rag_chain
-    logger.info("Iniciando: cargando documentos y construyendo índice RAG...")
-    rag_chain = build_rag_chain()
-    logger.info("RAG listo.")
-    yield
-    logger.info("Apagando servidor.")
-
-
-app = FastAPI(title="AXION Chatbot API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="AXION Chatbot API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -91,11 +79,20 @@ def build_rag_chain():
     return chain
 
 
+def get_rag_chain():
+    global rag_chain
+    if rag_chain is None:
+        logger.info("Inicializando RAG bajo demanda...")
+        rag_chain = build_rag_chain()
+        logger.info("RAG listo.")
+    return rag_chain
+
+
 
 # --- Endpoints ---
 @app.get("/")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "rag_initialized": rag_chain is not None}
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -104,7 +101,8 @@ def chat(request: ChatRequest):
         raise HTTPException(status_code=400, detail="El mensaje no puede estar vacío.")
     
     try:
-        result = rag_chain.invoke({"query": request.message})
+        chain = get_rag_chain()
+        result = chain.invoke({"query": request.message})
         return ChatResponse(reply=result["result"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
