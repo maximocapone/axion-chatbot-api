@@ -1,0 +1,22 @@
+---
+// Redirect root to /en by default
+---
+
+<script>
+  if (typeof window !== 'undefined') {
+    const preferredLang = localStorage.getItem('preferred-language') || 'en';
+    window.location.href = `/${preferredLang}`;
+  }
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/en" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/en">/en</a>...</p>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<section class="py-24 bg-secondary-bg/30">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Left: Image/Visual -->
+      <div class="relative">
+        <img 
+          src="/value/value-image.png" 
+          alt="AXION Web AI Value" 
+          class="rounded-3xl shadow-2xl w-full"
+        />
+        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-brand-red/20 rounded-full blur-2xl"></div>
+      </div>
+      
+      <!-- Right: Content -->
+      <div class="space-y-6">
+        <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark leading-tight">
+          {t('value.title')}
+        </h2>
+        
+        <ul class="space-y-4">
+          <li class="flex items-start">
+            <svg class="w-6 h-6 text-copper mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-lg text-gray-700">{t('value.point1')}</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-6 h-6 text-copper mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-lg text-gray-700">{t('value.point2')}</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-6 h-6 text-copper mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-lg text-gray-700">{t('value.point3')}</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-6 h-6 text-copper mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-lg text-gray-700">{t('value.point4')}</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-6 h-6 text-copper mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-lg text-gray-700">{t('value.point5')}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

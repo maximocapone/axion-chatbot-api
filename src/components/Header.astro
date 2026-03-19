@@ -1,0 +1,118 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const otherLang = lang === 'en' ? 'es' : 'en';
+---
+
+<header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <!-- Logo -->
+    <a href={`/${lang}`} class="flex flex-col items-start">
+      <img src="/logo/logo.png" alt="AXION Web AI" class="h-[80px] w-auto" />
+      <span class="text-xs text-gray-600 mt-1">AI Web Development Solutions</span>
+    </a>
+    
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center space-x-8">
+      <a href={`/${lang}#services`} class="text-dark hover:text-copper transition-colors duration-200 font-medium">
+        {t('nav.services')}
+      </a>
+      <a href={`/${lang}#process`} class="text-dark hover:text-copper transition-colors duration-200 font-medium">
+        {t('nav.process')}
+      </a>
+      <a href={`/${lang}#work`} class="text-dark hover:text-copper transition-colors duration-200 font-medium">
+        {t('nav.work')}
+      </a>
+      <a href={`/${lang}#contact`} class="text-dark hover:text-copper transition-colors duration-200 font-medium">
+        {t('nav.contact')}
+      </a>
+      
+      <!-- Language Selector -->
+      <div class="flex items-center space-x-2 text-sm">
+        <a 
+          href="/en" 
+          class={`${lang === 'en' ? 'text-copper font-semibold' : 'text-dark hover:text-copper'} transition-colors duration-200`}
+          onclick="localStorage.setItem('preferred-language', 'en')"
+        >
+          EN
+        </a>
+        <span class="text-gray-400">|</span>
+        <a 
+          href="/es" 
+          class={`${lang === 'es' ? 'text-copper font-semibold' : 'text-dark hover:text-copper'} transition-colors duration-200`}
+          onclick="localStorage.setItem('preferred-language', 'es')"
+        >
+          ES
+        </a>
+      </div>
+    </div>
+    
+    <!-- CTA Button -->
+    <a 
+      href={`/${lang}#contact`}
+      class="hidden md:inline-block bg-brand-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-red-hover hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+    >
+      {t('nav.cta')}
+    </a>
+    
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-button" class="md:hidden text-dark">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </nav>
+  
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+    <div class="container mx-auto px-4 py-4 space-y-4">
+      <a href={`/${lang}#services`} class="block text-dark hover:text-copper transition-colors">
+        {t('nav.services')}
+      </a>
+      <a href={`/${lang}#process`} class="block text-dark hover:text-copper transition-colors">
+        {t('nav.process')}
+      </a>
+      <a href={`/${lang}#work`} class="block text-dark hover:text-copper transition-colors">
+        {t('nav.work')}
+      </a>
+      <a href={`/${lang}#contact`} class="block text-dark hover:text-copper transition-colors">
+        {t('nav.contact')}
+      </a>
+      
+      <div class="flex items-center space-x-2 pt-2">
+        <a href="/en" class={`${lang === 'en' ? 'text-copper font-semibold' : 'text-dark'}`}>EN</a>
+        <span>|</span>
+        <a href="/es" class={`${lang === 'es' ? 'text-copper font-semibold' : 'text-dark'}`}>ES</a>
+      </div>
+      
+      <a 
+        href={`/${lang}#contact`}
+        class="block bg-brand-red text-white px-6 py-3 rounded-lg font-semibold text-center"
+      >
+        {t('nav.cta')}
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Sticky header with blur background
+  const header = document.getElementById('header');
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      header?.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+    } else {
+      header?.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+    }
+  });
+  
+  // Mobile menu toggle
+  mobileMenuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+</script>

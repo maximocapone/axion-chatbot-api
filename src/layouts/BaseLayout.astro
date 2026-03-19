@@ -1,0 +1,60 @@
+---
+import ChatWidget from '../components/ChatWidget.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: string;
+}
+
+const { title, description, lang } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <slot name="head" />
+  </head>
+  <body class="bg-white text-dark antialiased">
+    <slot />
+    <ChatWidget />
+  </body>
+</html>
+
+<script>
+  // Language detection and persistence
+  if (typeof window !== 'undefined') {
+    const storedLang = localStorage.getItem('preferred-language');
+    const browserLang = navigator.language.split('-')[0];
+    const currentPath = window.location.pathname;
+    const currentLang = currentPath.split('/')[1];
+    
+    if (!storedLang && !currentLang && (browserLang === 'es' || browserLang === 'en')) {
+      localStorage.setItem('preferred-language', browserLang);
+      if (browserLang !== currentLang && currentPath === '/') {
+        window.location.href = `/${browserLang}`;
+      }
+    }
+  }
+</script>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+</style>

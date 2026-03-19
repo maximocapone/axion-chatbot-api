@@ -1,0 +1,109 @@
+---
+// Cambia esta URL por la de tu API en Railway/Render cuando esté desplegada
+const API_URL = import.meta.env.PUBLIC_CHAT_API_URL ?? "http://localhost:8000";
+---
+
+<!-- Botón flotante para abrir el chat -->
+<button
+  id="chat-toggle"
+  class="fixed bottom-6 right-6 z-50 bg-violet-600 hover:bg-violet-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all"
+  aria-label="Abrir chat"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M8 10h.01M12 10h.01M16 10h.01M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+  </svg>
+</button>
+
+<!-- Ventana del chat -->
+<div
+  id="chat-window"
+  class="fixed bottom-24 right-6 z-50 hidden w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200"
+>
+  <!-- Header -->
+  <div class="bg-violet-600 px-4 py-3 flex items-center justify-between">
+    <span class="text-white font-semibold text-sm">AXION AI Assistant</span>
+    <button id="chat-close" class="text-white/80 hover:text-white text-lg leading-none">&times;</button>
+  </div>
+
+  <!-- Mensajes -->
+  <div id="chat-messages" class="flex-1 overflow-y-auto p-3 space-y-2 h-72 text-sm">
+    <div class="bg-gray-100 rounded-xl px-3 py-2 text-gray-700 max-w-[85%]">
+      Hola, soy el asistente de AXION. ¿En qué puedo ayudarte?
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="border-t border-gray-200 p-3 flex gap-2">
+    <input
+      id="chat-input"
+      type="text"
+      placeholder="Escribe tu mensaje..."
+      class="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-violet-500"
+      maxlength="500"
+    />
+    <button
+      id="chat-send"
+      class="bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-3 py-2 text-sm font-semibold transition-colors"
+    >
+      ➤
+    </button>
+  </div>
+</div>
+
+<script define:vars={{ API_URL }}>
+  const toggle = document.getElementById("chat-toggle");
+  const window_ = document.getElementById("chat-window");
+  const close = document.getElementById("chat-close");
+  const input = document.getElementById("chat-input");
+  const send = document.getElementById("chat-send");
+  const messages = document.getElementById("chat-messages");
+
+  toggle.addEventListener("click", () => window_.classList.toggle("hidden"));
+  close.addEventListener("click", () => window_.classList.add("hidden"));
+
+  function addMessage(text, isUser) {
+    const div = document.createElement("div");
+    div.className = isUser
+      ? "bg-violet-100 rounded-xl px-3 py-2 text-violet-900 max-w-[85%] ml-auto"
+      : "bg-gray-100 rounded-xl px-3 py-2 text-gray-700 max-w-[85%]";
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, true);
+    input.value = "";
+    send.disabled = true;
+
+    const thinking = document.createElement("div");
+    thinking.className = "bg-gray-100 rounded-xl px-3 py-2 text-gray-400 max-w-[85%] italic";
+    thinking.textContent = "Escribiendo...";
+    messages.appendChild(thinking);
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+      const res = await fetch(`${API_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      thinking.remove();
+      addMessage(data.reply ?? "Sin respuesta.", false);
+    } catch {
+      thinking.remove();
+      addMessage("Error al conectar con el servidor.", false);
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  }
+
+  send.addEventListener("click", sendMessage);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
+</script>

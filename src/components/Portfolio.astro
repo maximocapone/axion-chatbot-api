@@ -1,0 +1,77 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const projects = [
+  {
+    title: 'Dashboard Analytics',
+    category: 'SaaS Platform',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop'
+  },
+  {
+    title: 'Corporate Website',
+    category: 'Enterprise',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop'
+  },
+  {
+    title: 'Creative Portfolio',
+    category: 'Landing Page',
+    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&h=600&fit=crop'
+  },
+  {
+    title: 'SaaS Platform',
+    category: 'Web Application',
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop'
+  },
+  {
+    title: 'Mobile App Landing',
+    category: 'Product Launch',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop'
+  },
+  {
+    title: 'E-Commerce Store',
+    category: 'Online Store',
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop'
+  }
+];
+---
+
+<section id="work" class="py-24 bg-secondary-bg/20">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-16">
+      <p class="text-sm uppercase tracking-wider text-copper font-semibold mb-4">
+        {t('portfolio.label')}
+      </p>
+      <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark">
+        {t('portfolio.title')}
+      </h2>
+    </div>
+    
+    <!-- Portfolio Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {projects.map((project) => (
+        <div class="group relative overflow-hidden rounded-xl shadow-xl cursor-pointer">
+          <!-- Image -->
+          <div class="aspect-[4/3] overflow-hidden bg-gray-200">
+            <img 
+              src={project.image}
+              alt={project.title}
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+          </div>
+          
+          <!-- Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <div class="p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              <p class="text-copper text-sm font-semibold mb-1">{project.category}</p>
+              <h3 class="text-white text-2xl font-serif font-bold">{project.title}</h3>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
