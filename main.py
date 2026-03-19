@@ -6,6 +6,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader, DirectoryLoader, PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import os
 import logging
@@ -71,9 +72,24 @@ def build_rag_chain():
 
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=openai_api_key)
 
+    prompt = PromptTemplate(
+        input_variables=["context", "question"],
+        template="""
+Responde SOLO con la información del contexto.
+Si no está en el contexto, di: "No tengo esa información".
+
+Contexto:
+{context}
+
+Pregunta:
+{question}
+"""
+    )
+
     chain = RetrievalQA.from_chain_type(
         llm=llm,
         retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+        chain_type_kwargs={"prompt": prompt},
     )
     return chain
 
