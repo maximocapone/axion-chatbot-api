@@ -74,11 +74,11 @@ def build_rag_chain():
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=openai_api_key)
 
     prompt = PromptTemplate(
-        input_variables=["context", "question", "lang"],
+        input_variables=["context", "question"],
         template="""
 Responde SOLO con la información del contexto.
-Si no está en el contexto, di: "No tengo esa información" (en español) o "I don't have that information" (en inglés), según el idioma indicado.
-Responde siempre en el idioma indicado por {lang}: si es 'en' responde en inglés, si es 'es' responde en español.
+Si no está en el contexto, responde "I don't have that information" si la pregunta está en inglés, o "No tengo esa información" si está en español.
+Responde siempre en el mismo idioma en que está escrita la pregunta.
 
 Contexto:
 {context}
