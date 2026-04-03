@@ -37,6 +37,7 @@ app.add_middleware(
 # --- Modelos de datos ---
 class ChatRequest(BaseModel):
     message: str
+    lang: str = "es"
 
 class ChatResponse(BaseModel):
     reply: str
@@ -73,10 +74,11 @@ def build_rag_chain():
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=openai_api_key)
 
     prompt = PromptTemplate(
-        input_variables=["context", "question"],
+        input_variables=["context", "question", "lang"],
         template="""
 Responde SOLO con la información del contexto.
-Si no está en el contexto, di: "No tengo esa información".
+Si no está en el contexto, di: "No tengo esa información" (en español) o "I don't have that information" (en inglés), según el idioma indicado.
+Responde siempre en el idioma indicado por {lang}: si es 'en' responde en inglés, si es 'es' responde en español.
 
 Contexto:
 {context}
@@ -117,7 +119,8 @@ def chat(request: ChatRequest):
     
     try:
         chain = get_rag_chain()
-        result = chain.invoke({"query": request.message})
+        question_with_lang = f"[Respond in {'English' if request.lang == 'en' else 'Spanish'}] {request.message}"
+        result = chain.invoke({"query": question_with_lang})
         return ChatResponse(reply=result["result"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
