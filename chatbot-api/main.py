@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,6 +6,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import TextLoader, DirectoryLoader, PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import os
 import logging
@@ -17,11 +17,6 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Validación temprana de la API Key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY no está configurada. Añádela como variable de entorno.")
-
 # Orígenes permitidos (configura ALLOWED_ORIGIN en Railway con tu dominio)
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
 
@@ -29,18 +24,7 @@ ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
 rag_chain = None
 
 
-# --- Ciclo de vida: construye el RAG al arrancar ---
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global rag_chain
-    logger.info("Iniciando: cargando documentos y construyendo índice RAG...")
-    rag_chain = build_rag_chain()
-    logger.info("RAG listo.")
-    yield
-    logger.info("Apagando servidor.")
-
-
-app = FastAPI(title="AXION Chatbot API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="AXION Chatbot API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,6 +45,10 @@ class ChatResponse(BaseModel):
 # --- Construcción del RAG ---
 def build_rag_chain():
     """Carga los documentos de /docs y construye la cadena RAG."""
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY no está configurada. Añádela como variable de entorno.")
+
     docs_path = os.path.join(os.path.dirname(__file__), "docs")
 
     # Carga archivos .txt
@@ -79,23 +67,47 @@ def build_rag_chain():
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(documents)
 
-    embeddings = OpenAIEmbeddings(api_key=OPENAI_API_KEY)
+    embeddings = OpenAIEmbeddings(api_key=openai_api_key)
     vectorstore = Chroma.from_documents(chunks, embeddings)
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=OPENAI_API_KEY)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=openai_api_key)
+
+    prompt = PromptTemplate(
+        input_variables=["context", "question"],
+        template="""
+Responde SOLO con la información del contexto.
+Si no está en el contexto, di: "No tengo esa información".
+
+Contexto:
+{context}
+
+Pregunta:
+{question}
+"""
+    )
 
     chain = RetrievalQA.from_chain_type(
         llm=llm,
         retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+        chain_type_kwargs={"prompt": prompt},
     )
     return chain
+
+
+def get_rag_chain():
+    global rag_chain
+    if rag_chain is None:
+        logger.info("Inicializando RAG bajo demanda...")
+        rag_chain = build_rag_chain()
+        logger.info("RAG listo.")
+    return rag_chain
 
 
 
 # --- Endpoints ---
 @app.get("/")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "rag_initialized": rag_chain is not None}
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -104,7 +116,8 @@ def chat(request: ChatRequest):
         raise HTTPException(status_code=400, detail="El mensaje no puede estar vacío.")
     
     try:
-        result = rag_chain.invoke({"query": request.message})
+        chain = get_rag_chain()
+        result = chain.invoke({"query": request.message})
         return ChatResponse(reply=result["result"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
