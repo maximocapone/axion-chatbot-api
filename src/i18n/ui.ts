@@ -12,6 +12,7 @@ export const ui = {
     'nav.work': 'Work',
     'nav.contact': 'Contact',
     'nav.cta': 'Get a Quote',
+    'nav.signin': 'Sign In',
     
     'hero.title': 'Advanced solutions for automation, analytics, and business growth',
     'hero.subtitle': 'We are an agency specializing in the development of Artificial Intelligence solutions for companies seeking to optimize processes, increase sales, and make data-driven decisions.',
@@ -32,13 +33,13 @@ export const ui = {
     'services.ai.description': 'Reduced operating costs · Immediate customer service · Increased conversions · 24/7 availability · Scalability without hiring additional staff',
     
     'services.ux.title': 'Automation with AI Agents',
-    'services.ux.tagline': 'Automate. Delegate. Scale.',
+    'services.ux.tagline': 'Automatiza. Delega. Escala.',
     'services.ux.description': 'Automated customer responses · Data processing · Report generation · Marketing automation · Competitor monitoring · Data scraping',
     
     'services.performance.title': 'Benefits',
     'services.performance.description': "Time savings · Reduced human error · Faster processes · Increased productivity · Continuous, uninterrupted operation",
     
-    'services.automation.title': 'Social Network Analysis with AI',
+    'services.automation.title': 'Marketing Analytics with AI',
     'services.automation.tagline': 'Advanced system for analyzing social media data and generating strategic insights.',
     'services.automation.description': 'Sentiment analysis · Trend detection · Brand monitoring · Competitor analysis · Engagement prediction',
     
@@ -75,12 +76,13 @@ export const ui = {
     'contact.subtitle': "Let's build something amazing together",
     'contact.name': 'Name',
     'contact.email': 'Email',
+    'contact.phone': 'Phone',
     'contact.company': 'Company',
     'contact.message': 'Project Description',
     'contact.submit': 'Send Message',
     'contact.success': 'Thank you! We\'ll get back to you soon.',
     
-    'footer.tagline': 'Building the future of web, one AI-powered site at a time.',
+    'footer.tagline': 'AI Development Solutions',
     'footer.copyright': '© 2026 AXION Web AI. All rights reserved.',
   },
   es: {
@@ -89,6 +91,7 @@ export const ui = {
     'nav.work': 'Portafolio',
     'nav.contact': 'Contacto',
     'nav.cta': 'Solicitar Cotización',
+    'nav.signin': 'Iniciar Sesión',
     
     'hero.title': 'Soluciones avanzadas para automatización, análisis y crecimiento empresarial',
     'hero.subtitle': 'Somos una agencia especializada en el desarrollo de soluciones de Inteligencia Artificial para empresas que buscan optimizar procesos, aumentar ventas y tomar decisiones basadas en datos.',
@@ -115,7 +118,7 @@ export const ui = {
     'services.performance.title': 'Beneficios',
     'services.performance.description': 'Ahorro de tiempo · Reducción de errores humanos · Procesos más rápidos · Mayor productividad · Operación continua sin descanso',
     
-    'services.automation.title': 'Análisis de Redes Sociales con IA',
+    'services.automation.title': 'Análisis de Marketing con IA',
     'services.automation.tagline': 'Sistema avanzado para analizar datos de redes sociales y generar insights estratégicos.',
     'services.automation.description': 'Análisis de sentimiento · Detección de tendencias · Monitoreo de marca · Análisis de competidores · Predicción de engagement',
     
@@ -152,12 +155,13 @@ export const ui = {
     'contact.subtitle': 'Construyamos algo increíble juntos',
     'contact.name': 'Nombre',
     'contact.email': 'Correo',
+    'contact.phone': 'Teléfono',
     'contact.company': 'Empresa',
     'contact.message': 'Descripción del Proyecto',
     'contact.submit': 'Enviar Mensaje',
     'contact.success': '¡Gracias! Te contactaremos pronto.',
     
-    'footer.tagline': 'Construyendo el futuro de la web, un sitio potenciado por IA a la vez.',
+    'footer.tagline': 'AI Development Solutions',
     'footer.copyright': '© 2026 AXION Web AI. Todos los derechos reservados.',
   },
 } as const;
